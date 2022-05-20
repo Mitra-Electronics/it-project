@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from mongodb_driver import acc_insert, get_acc, acc_login
+from mongodb_driver import acc_insert, acc_login
 from jwt_driver import create_access_token, decode_access_token
 
 from schemas import Account, Login, Token, AccInfo
