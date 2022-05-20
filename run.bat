@@ -1,1 +1,1 @@
-uvicorn discord:app --reload 
+uvicorn main:app --reload 
