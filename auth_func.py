@@ -1,5 +1,3 @@
-import secrets
-
 from passlib.context import CryptContext
 
 from config import DEPRECIATED, SCHEMES, SECRET_KEY

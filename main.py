@@ -1,8 +1,9 @@
 from fastapi import FastAPI, HTTPException
-from mongodb_driver import acc_delete, acc_insert, acc_login, room_get, room_create
-from jwt_driver import create_access_token, decode_access_token
 
-from schemas import Account, GameInfo, Login, Token, AccInfo
+from driver.jwt_driver import create_access_token, decode_access_token
+from driver.mongodb_driver import (acc_delete, acc_insert, acc_login, room_create,
+                            room_get)
+from schemas import AccInfo, Account, GameInfo, Login, Token
 
 app = FastAPI()
 
@@ -20,7 +21,7 @@ def login(data: Login):
     if msg[0] == "Logged in":
         return {"status":"ok",'data':msg[0], "logged_in":True, "access_token":create_access_token({"sub":msg[1]['username']})}
     else:
-        {"status":"not ok","data":msg[0], "logged_in":False}
+        return {"status":"not ok","data":msg[0], "logged_in":False}
 
 @app.post("/get/account")
 def get_acc_info(token: Token):
@@ -28,7 +29,7 @@ def get_acc_info(token: Token):
 
 @app.post("/delete/account")
 def delete_account(token: Token):
-    del_func = acc_delete(decode_access_token(token.token))
+    del_func = acc_delete(AccInfo(**decode_access_token(token.token)))
     if del_func < 1:
         raise HTTPException(
             status_code=204,
@@ -38,8 +39,8 @@ def delete_account(token: Token):
         return {"status":"ok","data":"deleted", "deleted":True}
 
 @app.post("/game/verify/{room_code}")
-def verify_game(token: Token, room_code: str):
-    user = decode_access_token(token.token)
+async def verify_game(token: Token, room_code: str):
+    decode_access_token(token.token)
     room = room_get(room_code)
     if room is None:
         return {"status":"not ok", "data":"room not found", "room_found":False}
@@ -54,8 +55,8 @@ def create_game(auth_token: Token, room: GameInfo):
     return {"status":"ok", "room_created":True, "room_code":code}
 
 @app.websocket("/game/join/{room_code}")
-def handler(room_code: str):
-    room = room_get(room_code)
+async def handler(room_code: str):
+    room = await room_get(room_code)
     if room is None:
         raise HTTPException(
             status_code=1007,

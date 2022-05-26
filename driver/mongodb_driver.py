@@ -1,10 +1,11 @@
-from datetime import datetime
 import secrets
+from datetime import datetime
+
 from pymongo import MongoClient
 
-from schemas import Account, GameInfo, Login
 from auth_func import hash_password, verify_password
 from config import MONGO_DB_URL
+from schemas import Account, GameInfo, Login
 
 db_connect = MongoClient(MONGO_DB_URL)
 
@@ -21,6 +22,7 @@ def acc_insert(data: Account):
                         'last_name':data.last_name,
                         'email':data.email,
                         'username':data.username,
+                        'country':data.country,
                         'hashed_password':hash_password(data.password),
                         'created_on':datetime.utcnow(),
                         'receive_opt_emails':data.receive_opt_emails})
@@ -45,13 +47,12 @@ def acc_find_email(email: str):
 
 def acc_login(data: Login):
     account = get_acc(data.email)
-    if account != []:
+    if account != None:
         if not verify_password(data.password, account['hashed_password']):
-            return ["Wrong password", account]
+            return ["Wrong password", "0"]
         else:
             return ["Logged in", account]
-    else:
-        return ["There is no account registered with this email", account["username"]]
+    return ["There is no account registered with this email", "0"]
 
 def acc_delete(user: Account):
     deleted = acc.delete_one({"email":user.email, "username":user.username})

@@ -1,5 +1,5 @@
-from fastapi.exceptions import HTTPException
 from fastapi import status
+from fastapi.exceptions import HTTPException
 
 MONGO_DB_URL = "mongodb://localhost:27017"
 #MONGO_DB_URL = "mongodb+srv://main2:fKYgy2PJcQO9hspw@discord.me4b4.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"

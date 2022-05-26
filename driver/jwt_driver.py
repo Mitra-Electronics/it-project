@@ -3,10 +3,9 @@ from typing import Union
 
 from jose import JWTError, jwt
 
-from config import (ALGORITHM, CREDENTIALS_EXCEPTION,
-                    SECRET_KEY)
+from config import ALGORITHM, CREDENTIALS_EXCEPTION, SECRET_KEY
+from driver.mongodb_driver import get_acc_username
 from schemas import TokenData
-from mongodb_driver import get_acc_username
 
 
 def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None):

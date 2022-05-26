@@ -1,5 +1,7 @@
 from typing import Any, Literal
+
 from pydantic import BaseModel, EmailStr
+
 
 class AccInfo(BaseModel):
     first_name : str
@@ -7,6 +9,9 @@ class AccInfo(BaseModel):
     email : EmailStr
     username : str
     country : Literal['India', 'Pakistan', 'Bangladesh', 'Sri Lanka', 'Nepal', 'Bhutan', 'Maldives', 'Afghanisthan', 'Iran', 'United States of America', 'United Kingdom']
+
+    def get_full_name(self):
+        return self.first_name + " " + self.last_name
 
 class Account(AccInfo):
     password : str
