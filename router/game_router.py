@@ -9,7 +9,7 @@ router = APIRouter(
     tags=["Game"],
 )
 
-@router.post("/game/verify/{room_code}")
+@router.post("/verify/{room_code}")
 async def verify_game(room_code: str):
     room = room_get(room_code)
     if room is None:
@@ -17,7 +17,7 @@ async def verify_game(room_code: str):
     else:
         return {"status":"not ok", "data":"room not found", "room_found":False}
 
-@router.post("/game/create")
+@router.post("/create")
 def create_game(auth_token: Token, room: GameInfo):
     code = room_create(decode_access_token(auth_token.token), room)
     if code is False:
@@ -26,7 +26,7 @@ def create_game(auth_token: Token, room: GameInfo):
 
 manager = ConnectionManager()
 
-@router.websocket("/game/join/{room_code}")
+@router.websocket("/join/{room_code}")
 async def handler(websocket: WebSocket, room_code: str):
     await manager.connect(websocket)
     room = Game(**room_get(room_code))

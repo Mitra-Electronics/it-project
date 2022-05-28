@@ -6,7 +6,7 @@ from schemas import AccInfo, Account, Login, Token
 from router.game_router import router
 
 app = FastAPI()
-app.include_router(router)
+app.include_router(router, prefix="/game")
 
 @app.post("/signup")
 def signup(data: Account):
