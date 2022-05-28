@@ -1,11 +1,12 @@
 from fastapi import FastAPI, HTTPException
 
 from driver.jwt_driver import create_access_token, decode_access_token
-from driver.mongodb_driver import (acc_delete, acc_insert, acc_login, room_create,
-                            room_get)
-from schemas import AccInfo, Account, GameInfo, Login, Token
+from driver.mongodb_driver import (acc_delete, acc_insert, acc_login)
+from schemas import AccInfo, Account, Login, Token
+from router.game_router import router
 
 app = FastAPI()
+app.include_router(router)
 
 @app.post("/signup")
 def signup(data: Account):
@@ -37,30 +38,3 @@ def delete_account(token: Token):
         )
     else:
         return {"status":"ok","data":"deleted", "deleted":True}
-
-@app.post("/game/verify/{room_code}")
-async def verify_game(token: Token, room_code: str):
-    decode_access_token(token.token)
-    room = room_get(room_code)
-    if room is None:
-        return {"status":"not ok", "data":"room not found", "room_found":False}
-    else:
-        return {"status":"not ok", "data":"room not found", "room_found":False}
-
-@app.post("/game/create")
-def create_game(auth_token: Token, room: GameInfo):
-    code = room_create(decode_access_token(auth_token.token), room)
-    if code is False:
-        return {"status":"not ok", "room_created":False}
-    return {"status":"ok", "room_created":True, "room_code":code}
-
-@app.websocket("/game/join/{room_code}")
-async def handler(room_code: str):
-    room = await room_get(room_code)
-    if room is None:
-        raise HTTPException(
-            status_code=1007,
-            detail="Room doesn't exist"
-        )
-    else:
-        pass
